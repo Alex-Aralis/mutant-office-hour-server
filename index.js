@@ -12,8 +12,8 @@ dotenv.load();
 
 // Authenticate with firebase
 firebase.initializeApp({
-  serviceAccount: "firebase-credentials-pm.json",
-  databaseURL: "https://mutant-hours-pm.firebaseio.com"
+  serviceAccount: "firebase-credentials.json",
+  databaseURL: "https://mutant-hours-4ea44.firebaseio.com"
 });
 var rootRef = firebase.database().ref();
 
@@ -21,9 +21,17 @@ var rootRef = firebase.database().ref();
 var twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // Listen for new texts being added
-var textsRef = rootRef.child('texts');
-textsRef.on('child_added', function(snapshot) {
+var pendingTextsRef = rootRef.child('pending_texts');
+var processedTextRef = rootRef.child('processed_texts');
+
+pendingTextsRef.on('child_added', function(snapshot) {
+  console.log('child added');
   var text = snapshot.val();
+  console.log(text);
+  console.log(snapshot.key);
+  processedTextRef.child(snapshot.key).set({text: text});
+  snapshot.ref.remove();
+  
   twilioClient.messages.create({
     body: text.name + ', I am available to see you now. Please come to my office so we can discuss: "' + text.topic + '"',
     to: text.phoneNumber,  // Text this number
@@ -35,6 +43,8 @@ textsRef.on('child_added', function(snapshot) {
   });
 });
 
+/*
 server.listen(3030, function() {
   console.log('listening on http://localhost:3030');
 });
+*/
