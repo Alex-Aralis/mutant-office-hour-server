@@ -29,8 +29,8 @@ var rootRef = firebase.database().ref();
 var twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // Listen for new texts being added
-var pendingTextsRef = rootRef.child('pending_texts');
-var processedTextsRef = rootRef.child('processed_texts');
+var pendingTextsRef = rootRef.child('texts').child('pending');
+var processedTextsRef = rootRef.child('texts').child('processed');
 
 pendingTextsRef.on('child_added', function(snapshot) {
   console.log('child added');
