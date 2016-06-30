@@ -37,7 +37,6 @@ pendingTextsRef.on('child_added', function(snapshot) {
   var text = snapshot.val();
   console.log(text);
   console.log(snapshot.key);
-  snapshot.ref.remove();
   
   twilioClient.messages.create({
     body: text.name + ', I am available to see you now. '+
@@ -45,22 +44,24 @@ pendingTextsRef.on('child_added', function(snapshot) {
     to: text.phone,  // Text this number
     from: process.env.TWILIO_PHONE // From a valid Twilio number
   }, function(err, message) {
+      var processedText = {
+        text:text,
+      };
       if(err) {
         console.log(err.message);
-        processedTextsRef.child(snapshot.key).set({
-            text: text, 
-            isSent: false, 
-            error: err, 
-            message: message,
-        });
+	console.log(message);
+        processedText.isSent = false;
+        processedText.error = err;
       }else{
-        processedTextsRef.child(snapshot.key).set({
-            text: text, 
-            isSent: true, 
-            error: null, 
-            message: message,
-        });
+        processedText.isSent = true;
+        processedText.message = message;
       }
+
+      processedTextsRef.child(snapshot.key)
+        .set(processedText)
+        .then(function(){
+          snapshot.ref.remove();
+        });
   });
 });
 
