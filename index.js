@@ -45,9 +45,13 @@ pendingTextsRef.on('child_added', function(snapshot) {
     var info = infoSnapshot.val();
 
 	  twilioClient.messages.create({
-	    body: 'Hello ' + text.name + ', \nProfessor '+info.displayName+' is available to see you now. '+
+	    body: 'Hello ' + text.name + ', \n'+
+		(info.displayName ? 'Professor '+info.displayName : 'your professor' ) +
+		' is available to see you now. '+
 		'Please go to their office to discuss: "' + text.topic + '" \n'+
-		'If you would like to reschedule email Professor '+info.displayName+' at <'+info.email+'>.',
+		'If you would like to reschedule, email '+
+		(info.displayNmae ? 'Professor '+info.displayName : 'your professor' ) +
+		' at <'+info.email+'>.',
 	    to: text.phone,  // Text this number
 	    from: process.env.TWILIO_PHONE // From a valid Twilio number
 	  }, function(err, message) {
