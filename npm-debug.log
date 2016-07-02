@@ -1,5 +1,5 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'start' ]
+1 verbose cli [ '/usr/bin/node', '/bin/npm', 'start' ]
 2 info using npm@3.9.5
 3 info using node@v6.2.2
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
@@ -7,7 +7,7 @@
 6 silly lifecycle mutant-list-server@0.1.0~prestart: no script for prestart, continuing
 7 info lifecycle mutant-list-server@0.1.0~start: mutant-list-server@0.1.0
 8 verbose lifecycle mutant-list-server@0.1.0~start: unsafe-perm in lifecycle true
-9 verbose lifecycle mutant-list-server@0.1.0~start: PATH: /usr/lib/node_modules/npm/bin/node-gyp-bin:/home/developer/git/working-mutant-office-hour-server/node_modules/.bin:/usr/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/developer/.local/bin:/home/developer/bin
+9 verbose lifecycle mutant-list-server@0.1.0~start: PATH: /usr/lib/node_modules/npm/bin/node-gyp-bin:/home/developer/git/working-mutant-office-hour-server/node_modules/.bin:/usr/bin:/sbin:/bin:/usr/sbin:/usr/bin
 10 verbose lifecycle mutant-list-server@0.1.0~start: CWD: /home/developer/git/working-mutant-office-hour-server
 11 silly lifecycle mutant-list-server@0.1.0~start: Args: [ '-c', 'node index.js' ]
 12 silly lifecycle mutant-list-server@0.1.0~start: Returned: code: 1  signal: null
@@ -25,7 +25,7 @@
 15 verbose pkgid mutant-list-server@0.1.0
 16 verbose cwd /home/developer/git/working-mutant-office-hour-server
 17 error Linux 3.10.0-327.10.1.el7.x86_64
-18 error argv "/usr/bin/node" "/usr/bin/npm" "start"
+18 error argv "/usr/bin/node" "/bin/npm" "start"
 19 error node v6.2.2
 20 error npm  v3.9.5
 21 error code ELIFECYCLE

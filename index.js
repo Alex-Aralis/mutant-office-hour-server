@@ -31,57 +31,62 @@ var twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN)
 // Listen for new texts being added
 var pendingTextsRef = rootRef.child('texts').child('pending');
 var processedTextsRef = rootRef.child('texts').child('processed');
+var usersRef = rootRef.child('users');
 
 pendingTextsRef.on('child_added', function(snapshot) {
-  console.log('child added');
   var text = snapshot.val();
+  var infoRef = usersRef.child(text.senderUid).child('info');
+  console.log('child added');
   console.log(text);
   console.log(snapshot.key);
   
-  twilioClient.messages.create({
-    body: text.name + ', I am available to see you now. '+
-        'Please come to my office so we can discuss: "' + text.topic + '"',
-    to: text.phone,  // Text this number
-    from: process.env.TWILIO_PHONE // From a valid Twilio number
-  }, function(err, message) {
-      var processedText = {
-        text:text,
-      };
-      if(err) {
-        console.log(err.message);
-	console.log(message);
-        processedText.isSent = false;
-        processedText.error = err;
-      }else{
-        processedText.isSent = true;
-        processedText.message = message;
-      }
+  infoRef.on('value', function(infoSnapshot){
+    console.log(infoSnapshot.val());
+    var info = infoSnapshot.val();
 
-      processedTextsRef.child(snapshot.key)
-        .set(processedText)
-        .then(function(){
-          snapshot.ref.remove();
-        });
+	  twilioClient.messages.create({
+	    body: 'Hello ' + text.name + ', \nProfessor '+info.displayName+' is available to see you now. '+
+		'Please go to their office to discuss: "' + text.topic + '" \n'+
+		'If you would like to reschedule email Professor '+info.displayName+' at <'+info.email+'>.',
+	    to: text.phone,  // Text this number
+	    from: process.env.TWILIO_PHONE // From a valid Twilio number
+	  }, function(err, message) {
+	      var processedText = {
+		text:text,
+	      };
+	      if(err) {
+		console.log(err.message);
+		console.log(message);
+		processedText.isSent = false;
+		processedText.error = err;
+	      }else{
+		processedText.isSent = true;
+		processedText.message = message;
+	      }
+
+	      processedTextsRef.child(snapshot.key)
+		.set(processedText)
+		.then(function(){
+		  snapshot.ref.remove();
+		});
+	  });
   });
 });
 
+/*
 var pendingEmailsRef = rootRef.child('emails').child('pending');
 var processedEmailsRef = rootRef.child('emails').child('processed');
 
 pendingEmailsRef.on('child_added', function(snapshot) {
   console.log('child added');
-  var email = snapshot.val();
-  console.log(email);
+  var pendingInfo = snapshot.val();
+  console.log(pendingInfo);
   console.log(snapshot.key);
-  snapshot.ref.remove();
   
-  email.from = '<postmaster@'+process.env.MAILGUN_DOMAIN+'>';
-  email.subject = 
-
   mailgunClient.messages().send(
     {
         from: '<postmaster@'+process.env.MAILGUN_DOMAIN+'>',
-        to: email.address,
+        to: pendingInfo.address,
         subject: 'Mutant Hours Registration',
         text: 'You have been registered to the Mutant Hours Service with this email address.',
     },
@@ -104,26 +109,14 @@ pendingEmailsRef.on('child_added', function(snapshot) {
 
         processedEmailsRef
             .child(snapshot.key)
-            .set(processedEmail);
+            .set(processedEmail)
+            .then(function(){
+                snapshot.ref.remove();
+            });
     }
   );
 });
 
-/*
-mailgunClient.messages().send(
-{
-    from: '<postmaster@'+process.env.MAILGUN_DOMAIN+'>',
-    to: 'alex.aralis@gmail.com',
-    subject: 'Mutant Hours Registration',
-    text: 'You have been registered to the Mutant Hours Service with this email address.',
-},
-function(error, body){
-    console.log(body);
-    if(error){
-        console.log(error);
-    }
-}
-);
 */
 
 /*
